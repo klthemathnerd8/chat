@@ -4,24 +4,30 @@
   <title>Live Chat</title>
 </head>
 <body>
-  <h1>Live Chat</h1>
-  <input type="text" id="message">
-  <button id="send">Send</button>
   <ul id="messages"></ul>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.2/socket.io.min.js"></script>
+  <form id="chat-form">
+    <input type="text" id="message-input" autocomplete="off">
+    <button>Send</button>
+  </form>
+  
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
+    var socket = io();
 
-    document.getElementById('send').addEventListener('click', () => {
-      const message = document.getElementById('message').value;
-      socket.emit('message', message);
+    var form = document.getElementById('chat-form');
+    var input = document.getElementById('message-input');
+    var messages = document.getElementById('messages');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      socket.emit('chat message', input.value);
+      input.value = '';
     });
 
-    socket.on('message', (message) => {
-      const li = document.createElement('li');
-      li.textContent = message;
-      document.getElementById('messages').appendChild(li);
+    socket.on('chat message', function(msg) {
+      var li = document.createElement('li');
+      li.textContent = msg;
+      messages.appendChild(li);
     });
   </script>
 </body>
